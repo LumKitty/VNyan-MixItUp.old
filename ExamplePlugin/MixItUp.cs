@@ -5,6 +5,8 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,7 +20,7 @@ namespace Lum_MixItUp {
         private string platform = "Twitch";
         // private float someValue2 = 5.0f;
         private static HttpClient client = new HttpClient();
-
+        Dictionary<String, String> miuCommands = new Dictionary<string, string>();
 
         public void Awake() {
             // Register button to plugins window
@@ -127,41 +129,104 @@ namespace Lum_MixItUp {
 
             return output.ToString();
         }
+        async Task updateMiuCommands()
+        {
+            try
+            {
+                var GetResult = await client.GetAsync(miuURL + "commands");
+                string Response = GetResult.Content.ReadAsStringAsync().Result;
+
+                dynamic Results = JsonConvert.DeserializeObject<dynamic>(Response);
+                Console.WriteLine("fuck");
+                miuCommands.Clear();
+                foreach (dynamic Result in Results.Commands)
+                {
+                    // Console.WriteLine(Result.ToString());
+                    //Console.WriteLine(Result.Name + " : " + Result.ID);
+                    miuCommands.Add(Result.Name.ToString().ToLower(), Result.ID.ToString());
+                    //Console.WriteLine("Added");
+                }
+                GetResult.Dispose();
+            }
+            catch 
+            {
+                //Console.WriteLine(e.Message);
+            }
+        }
+        async Task httpRequest(string Method, string URL, string Content)
+        {
+            var jsonData = new System.Net.Http.StringContent(Content, Encoding.UTF8, "application/json");
+            string Response = "";
+            //Console.WriteLine(Method + ": " + URL + " : " + Content);
+            switch (Method)
+            {
+                case "POST":
+                    var PostResult = await client.PostAsync(URL, jsonData);
+                    Response = PostResult.Content.ReadAsStringAsync().Result;
+                    Console.WriteLine(PostResult.ToString());
+                    PostResult.Dispose();
+                    break;
+                case "PUT":
+                    var PutResult = await client.PutAsync(URL, jsonData);
+                    Response = PutResult.Content.ReadAsStringAsync().Result;
+                    PutResult.Dispose();
+                    break;
+                case "GET":
+                    var GetResult = await client.GetAsync(URL);
+                    Response = GetResult.Content.ReadAsStringAsync().Result;
+                    GetResult.Dispose();
+                    break;
+                case "PATCH":
+                    var request = new HttpRequestMessage(new HttpMethod("PATCH"), URL);
+                    var PatchResult = await client.SendAsync(request);
+                    Response = PatchResult.Content.ReadAsStringAsync().Result;
+                    PatchResult.Dispose();
+                    break;
+            }
+            //Console.WriteLine(Response.ToString());
+        }
+
+        async Task runMiuCommand(string command, string args) {
+            if (!miuCommands.ContainsKey(command))
+            {
+                await updateMiuCommands();
+                if (!miuCommands.ContainsKey(command)) { Console.WriteLine("command not found"); return; }
+            }
+
+            string Content = "{ \"Platform\": \"" + platform.ToString() + "\", \"Arguments\": \"" + args + "\" }";
+            httpRequest("POST", miuURL + "commands/" + miuCommands[command], Content);
+        }
 
         public void triggerCalled(string name, int val1, int val2, int val3, string val4, string val5, string val6) {
             if (val6.Length == 0) { val6 = platform.ToString(); }
-            
-            bool success = true;
+
             string URL = "";
-            string Method = "GET";
+            string Method = "";
             string Content = "";
-            switch (name) {
+            switch (name)
+            {
                 case "_lum_miu_chat":
                     URL = miuURL + "chat/message";
                     Method = "POST";
-                    Content = "{ \"Message\": \""+EscapeJSON(val4)+"\", \"Platform\": \""+platform.ToString()+"\", \"SendAsStreamer\": ";
+                    Content = "{ \"Message\": \"" + EscapeJSON(val4) + "\", \"Platform\": \"" + platform.ToString() + "\", \"SendAsStreamer\": ";
                     if (val1 > 0)
                     {
                         Content += "true }";
-                    } else
+                    }
+                    else
                     {
                         Content += "false }";
                     }
+                    httpRequest(Method, URL, Content);
                     break;
 
-                default:
-                    success = false;
+                case "_lum_miu_command":
+                    runMiuCommand(val4.ToLower(), val5);
                     break;
-            }
-            if (success) {
-                var data = new System.Net.Http.StringContent(Content, Encoding.UTF8, "application/json");
-                switch (Method) {
-                    case "POST":
-                        var task = client.PostAsync(URL, data);
-                        task.Wait();
-                        string resultContent = task.Result.Content.ReadAsStringAsync().Result;
-                        break;
-                }
+                case "_lum_miu_getcommands":
+                //    await updateMiuCommands();
+
+                    break;
             }
         }
         public void Start() { }

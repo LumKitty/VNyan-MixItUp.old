@@ -2,27 +2,27 @@
 
 This is early days. It works but use at your own risk. Three triggers are provided
 
-```_lum_miu_chat``` - Send a chat message
-Int 1 - Send as Streamer (set to 1 to send as streamer, set to 0 or leave unset to send as bot)
-Text 1 - Chat message to send
-Text 3 - Callback trigger name (returns HTTP result on Value1, e.g. 200 OK)
+```_lum_miu_chat``` - Send a chat message  
+Value 1 - Send as Streamer (set to 1 to send as streamer, set to 0 or leave unset to send as bot)  
+Text 1 - Chat message to send  
+Text 3 - Callback trigger name (returns HTTP result on Value1, e.g. 200 OK)  
 
-```_lum_miu_command``` - Run a MixItUp command
-Text 1 - Name of command in MixItUp (not chat trigger, actual name)
-Text 2 - Arguments to the command
-Text 3 - Callback trigger name (returns HTTP result on Value1, e.g. 200 OK)
+```_lum_miu_command``` - Run a MixItUp command  
+Text 1 - Name of command in MixItUp (not chat trigger, actual name)  
+Text 2 - Arguments to the command  
+Text 3 - Callback trigger name (returns HTTP result on Value1, e.g. 200 OK)  
 
-```_lum_miu_getcommands``` - Get the full list of commands MixItUp has available, including your custom ones
-Text 1 - Delimeter to use (defaults to comma if not specified)
-Text 3 - Callback trigger name (returns full list of commands on text1, e.g. Shoutout,Add Quote,Custom Command)
+```_lum_miu_getcommands``` - Get the full list of commands MixItUp has available, including your custom ones  
+Text 1 - Delimeter to use (defaults to comma if not specified)  
+Text 3 - Callback trigger name (returns full list of commands on text1, e.g. Shoutout,Add Quote,Custom Command)  
 
 ## Callback triggers
-Specify the name of a trigger in Text 3 and once the call to MixItUp is complete, it will call a VNyan trigger with this name with the results of your command.
-As this library grows this will be more useful, e.g. querying users and checking inventory levels etc. will use this mechanism.
-If this doesn't make sense, import the example node graph and it should be a bit more clear
+Specify the name of a trigger in Text 3 and once the call to MixItUp is complete, it will call a VNyan trigger with this name with the results of your command.  
+As this library grows this will be more useful, e.g. querying users and checking inventory levels etc. will use this mechanism.  
+If this doesn't make sense, import the example node graph and it should be a bit more clear!
 
 ## Configuration
-The default configuration assumes MixItUp is running on the same PC as VNyan and you are using Twitch.
+The default configuration assumes MixItUp is running on the same PC as VNyan and you are using Twitch.  
 After the first run, a config file will be saved in %USERPROFILE%\AppData\LocalLow\Suvidriel\VNyan\Lum-MixItUp.cfg you can change the API URL and platform here
 
 As always, if you find this useful, consider sending a follow or a raid my way, and if you make millions with it, consider sending me some :D

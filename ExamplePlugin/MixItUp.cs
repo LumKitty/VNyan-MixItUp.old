@@ -133,22 +133,29 @@ namespace Lum_MixItUp {
         {
             try
             {
-                var GetResult = await client.GetAsync(miuURL + "commands");
-                string Response = GetResult.Content.ReadAsStringAsync().Result;
-
-                dynamic Results = JsonConvert.DeserializeObject<dynamic>(Response);
-                Console.WriteLine("fuck");
                 miuCommands.Clear();
-                foreach (dynamic Result in Results.Commands)
+                int skip = 0;
+                int count = 0;
+                do
                 {
-                    // Console.WriteLine(Result.ToString());
-                    //Console.WriteLine(Result.Name + " : " + Result.ID);
-                    miuCommands.Add(Result.Name.ToString().ToLower(), Result.ID.ToString());
-                    //Console.WriteLine("Added");
-                }
-                GetResult.Dispose();
+                    var GetResult = await client.GetAsync(miuURL + "commands?pagesize=10&skip=" + skip.ToString());
+                    string Response = GetResult.Content.ReadAsStringAsync().Result;
+
+                    dynamic Results = JsonConvert.DeserializeObject<dynamic>(Response);
+                    count = Results.Commands.Count;
+                    // Console.WriteLine("Count: " + count.ToString());
+                    foreach (dynamic Result in Results.Commands)
+                    {
+                        // Console.WriteLine(Result.ToString());
+                        // Console.WriteLine(Result.Name + " : " + Result.ID);
+                        miuCommands.Add(Result.Name.ToString().ToLower(), Result.ID.ToString());
+                        // Console.WriteLine("Added");
+                    }
+                    GetResult.Dispose();
+                    skip += 10;
+                } while (count >= 10);
             }
-            catch 
+            catch //(Exception e)
             {
                 //Console.WriteLine(e.Message);
             }

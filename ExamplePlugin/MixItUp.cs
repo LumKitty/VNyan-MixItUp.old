@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -160,40 +161,48 @@ namespace Lum_MixItUp {
                 //Console.WriteLine(e.Message);
             }
         }
-        async Task httpRequest(string Method, string URL, string Content)
+        async Task httpRequest(string Method, string URL, string Content, string Callback)
         {
             var jsonData = new System.Net.Http.StringContent(Content, Encoding.UTF8, "application/json");
             string Response = "";
+            int httpStatus = 0;
             //Console.WriteLine(Method + ": " + URL + " : " + Content);
             switch (Method)
             {
                 case "POST":
                     var PostResult = await client.PostAsync(URL, jsonData);
                     Response = PostResult.Content.ReadAsStringAsync().Result;
+                    httpStatus = ((int)PostResult.StatusCode);
                     Console.WriteLine(PostResult.ToString());
                     PostResult.Dispose();
                     break;
                 case "PUT":
                     var PutResult = await client.PutAsync(URL, jsonData);
                     Response = PutResult.Content.ReadAsStringAsync().Result;
+                    httpStatus = ((int)PutResult.StatusCode);
                     PutResult.Dispose();
                     break;
                 case "GET":
                     var GetResult = await client.GetAsync(URL);
                     Response = GetResult.Content.ReadAsStringAsync().Result;
+                    httpStatus = ((int)GetResult.StatusCode);
                     GetResult.Dispose();
                     break;
                 case "PATCH":
                     var request = new HttpRequestMessage(new HttpMethod("PATCH"), URL);
                     var PatchResult = await client.SendAsync(request);
                     Response = PatchResult.Content.ReadAsStringAsync().Result;
+                    httpStatus = ((int)PatchResult.StatusCode);
                     PatchResult.Dispose();
                     break;
             }
             //Console.WriteLine(Response.ToString());
+            if (Callback.Length > 0) {
+                VNyanInterface.VNyanInterface.VNyanTrigger.callTrigger(Callback, httpStatus, 0, 0, "", "", "");
+            }
         }
 
-        async Task runMiuCommand(string command, string args) {
+        async Task runMiuCommand(string command, string args, string Callback) {
             if (!miuCommands.ContainsKey(command))
             {
                 await updateMiuCommands();
@@ -201,11 +210,22 @@ namespace Lum_MixItUp {
             }
 
             string Content = "{ \"Platform\": \"" + platform.ToString() + "\", \"Arguments\": \"" + args + "\" }";
-            httpRequest("POST", miuURL + "commands/" + miuCommands[command], Content);
+            httpRequest("POST", miuURL + "commands/" + miuCommands[command], Content, Callback);
+        }
+
+        async Task getMiuCommands(string delimiter, string Callback)
+        {
+            await updateMiuCommands();
+            string result = "";
+            foreach(string value in miuCommands.Keys)
+            {
+                result += delimiter + value;
+            }
+            result = result.Substring(delimiter.Length);
+            VNyanInterface.VNyanInterface.VNyanTrigger.callTrigger(Callback, 0, 0, 0, result, "", "");
         }
 
         public void triggerCalled(string name, int val1, int val2, int val3, string val4, string val5, string val6) {
-            if (val6.Length == 0) { val6 = platform.ToString(); }
 
             string URL = "";
             string Method = "";
@@ -224,15 +244,15 @@ namespace Lum_MixItUp {
                     {
                         Content += "false }";
                     }
-                    httpRequest(Method, URL, Content);
+                    httpRequest(Method, URL, Content, val6);
                     break;
 
                 case "_lum_miu_command":
-                    runMiuCommand(val4.ToLower(), val5);
+                    runMiuCommand(val4.ToLower(), val5, val6);
                     break;
                 case "_lum_miu_getcommands":
-                //    await updateMiuCommands();
-
+                    if (val4.Length == 0) { val4 = ","; }
+                    getMiuCommands(val4, val6);
                     break;
             }
         }

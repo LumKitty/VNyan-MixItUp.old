@@ -1,4 +1,4 @@
-# MixItUp plugin for VNyan
+o# MixItUp plugin for VNyan
 
 This is early days. It works but use at your own risk. Three triggers are provided
 
@@ -13,7 +13,7 @@ Text 2 - Arguments to the command
 Text 3 - Callback trigger name (returns HTTP result on Value1, e.g. 200 OK)  
 
 ```_lum_miu_getcommands``` - Get the full list of commands MixItUp has available, including your custom ones  
-Text 1 - Delimeter to use (defaults to comma if not specified) use a different delimeter such as || if you have command names with pipes in them. You are not limited to one character.  
+Text 1 - Delimeter to use (defaults to comma if not specified) use a different delimeter such as || if you have command names with commas in them. You are not limited to one character.  
 Text 3 - Callback trigger name (returns full list of commands on text1, e.g. Shoutout,Add Quote,Custom Command)  
   
 This trigger also forces the plugin to refresh & cache the full list of commands from MIU. The main miu_command trigger will also do this if you request a command that isn't in the list (Note: The list is blank on startup). If you have a lot of commands you may wish to call this trigger on startup.  
@@ -25,7 +25,7 @@ As this library grows this will be more useful, e.g. querying users and checking
 If this doesn't make sense, import the example node graph and it should be a bit more clear!
 
 ## Installation
-Unpack the zip file into VNyan\Items\Assemblies
+Copy the contents of the zip file into VNyan\Items\Assemblies
 
 ## Configuration
 The default configuration assumes MixItUp is running on the same PC as VNyan and you are using Twitch.  

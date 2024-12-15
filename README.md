@@ -1,4 +1,4 @@
-o# MixItUp plugin for VNyan
+# MixItUp plugin for VNyan
 
 This is early days. It works but use at your own risk. Three triggers are provided
 

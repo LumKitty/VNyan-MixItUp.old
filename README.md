@@ -25,7 +25,7 @@ As this library grows this will be more useful, e.g. querying users and checking
 If this doesn't make sense, import the example node graph and it should be a bit more clear!
 
 ## Installation
-Copy the contents of the zip file into VNyan\Items\Assemblies (no subfolders)
+Copy the contents of the zip file into VNyan\Items\Assemblies (no subfolders)  
 Enable the MixItUp developer API: Services -> Developer API
 
 ## Configuration

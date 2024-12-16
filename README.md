@@ -3,7 +3,7 @@
 This is early days. It works but use at your own risk. Three triggers are provided
 
 ```_lum_miu_chat``` - Send a chat message  
-Value 1 - Send as Streamer (set to 1 to send as streamer, set to 0 or leave unset to send as bot)  
+Value 1 - Send as Streamer (set to 1 to send as streamer, set to 0 or leave unset to send as bot. If you do not have a bot account, this will always send as streamer)  
 Text 1 - Chat message to send  
 Text 3 - Callback trigger name (returns HTTP result on Value1, e.g. 200 OK)  
 

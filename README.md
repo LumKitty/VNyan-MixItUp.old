@@ -1,5 +1,7 @@
 # MixItUp plugin for VNyan
 
+# Outdated repo, use: https://github.com/LumKitty/VNyan-MixItUp
+
 This is early days. It works but use at your own risk. Three triggers are provided
 
 ```_lum_miu_chat``` - Send a chat message  
